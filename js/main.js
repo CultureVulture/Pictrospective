@@ -2,15 +2,16 @@ $(function() {
 
   function ajaxCalls(tellServ) {
     $.ajax({
-      url: '',
-      data: tellServ,
+      url: 'http://localhost:8000/search.py',
+      data: {search: tellServ  },
       dataType: 'json'
     })
     .done(function( data ) {
 
       console.log('done!');
-      data.keys()
+      //data.keys()
       var numItems = Object.keys(data).length;
+      console.log(numItems);
       var colWidth = numItems/12;
 
       $.each(data, function(key, val){
