@@ -1,12 +1,12 @@
 from urllib2 import Request, urlopen, URLError
 
 import xml.etree.ElementTree as ET
-
 import json
 import random
+import pickle
 
 #Finds numPictures of data and return numResults that are spaced evenly
-def search(term, numResults):
+def search(term, numResults = 4):
 
 	term = term.replace(" ", "%20")
 
@@ -15,7 +15,7 @@ def search(term, numResults):
 	troveBase = "http://trove.nla.gov.au"
 
 	#key = qfmfb53vlncd3s1q
-	numPictures = 50
+	numPictures = 100
 	s = 0
 	size = 0
 	while True:
@@ -45,7 +45,8 @@ def search(term, numResults):
 			try:
 				year = picture.find("issued").text
 				try:
-					int(year)
+					if int(year) > 2015:
+						continue
 				except:
 					continue
 			except AttributeError:
@@ -67,19 +68,17 @@ def search(term, numResults):
 					image = ""
 					if thumbImage[-5] == "t" and "acms.sl.nsw.gov.au" in image:
 						image = thumbImage[:-5] + "r.jpg" 
-				else:
-					print "No image???"
-
 
 			try:
 				pictureDict[year].append( dict() )
 			except:
 				pictureDict[year] = [ dict() ]
 
-			pictureDict[year][-1]["name"] = name
+			#pictureDict[year][-1]["name"] = name
 			pictureDict[year][-1]["year"] = year
-			pictureDict[year][-1]["caption"] = caption
+			#pictureDict[year][-1]["caption"] = caption
 			pictureDict[year][-1]["troveLink"] = troveBase + troveLink
+			pictureDict[year][-1]["link"] = resource
 			pictureDict[year][-1]["thumbnail"] = thumbImage
 			pictureDict[year][-1]["image"] = image
 		
@@ -100,7 +99,7 @@ def search(term, numResults):
 	latest = int(years[-1])
 
 	#Rounded to nearest decade
-	gap = ((latest-earliest)/(numResults) + 5)/10*10
+	gap = ((latest-earliest)/(numResults) + 10)/10*10
 
 	#Round earliest to nearest decade: Yay for integer arithmetic
 	earliest = earliest /10 * 10
@@ -108,25 +107,46 @@ def search(term, numResults):
 	print earliest, latest, gap
 	toReturn = dict()
 
-	#toReturn
-
-	print years
 	for i in xrange(numResults):
 		#Choose a random list, choose a picture from that
 		rList = random.choice([year for year in years if int(year) >= earliest + i*gap and int(year) < earliest+(i+1)*gap  ])
+		toReturn[str(earliest + i*gap) + "-" + str(earliest + (i+1)*gap)] =  random.choice(pictureDict[rList])
 
-		print rList
-		toReturn[str(i)] =  random.choice(pictureDict[rList])
-		print toReturn[str(i)]
+	#Save results for later looking into
+	pickle.dump(pictureDict, open('searchResults', 'wb'))
+
+	return json.dumps(toReturn)
 
 
 
-	#Divide into n groups
-	#Find a representitive image in each range
+def refineSearch(yearRange, numResults = 4):
 	
-	#Return
+	#open json file
+	pictureDict = pickle.load(open("searchResults"))
+	
 
+	refinedPictureDict = dict([ (year, pictureDict[year]) for year in pictureDict if int(year) >= yearRange[0] and int(year) < yearRange[1] ])
 
-	return json.dumps(pictureDict)
+	years = sorted(refinedPictureDict.keys())
+	print years
+	#Redefining it for earlier
+	latest = int(years[-1])
+	earliest = int(years[0])
 
-search("beach", 4)
+	gap = (latest-earliest)/(numResults)
+
+	earliest = yearRange[0]
+
+	toReturn = dict()
+
+	#Find them like how we found them before
+	for i in xrange(numResults):
+		#Choose a random list, choose a picture from that
+		rList = random.choice([year for year in years if int(year) >= earliest + i*gap and int(year) < earliest+(i+1)*gap  ])
+		
+		toReturn[str(earliest + i*gap) + "-" + str(earliest + (i+1)*gap)] =  random.choice(pictureDict[rList])
+
+	print toReturn
+
+print search("kitten", 4)
+#print refineSearch((1930, 1960), 4)
