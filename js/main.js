@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   function ajaxCalls(tellServ) {
     $.ajax({
-      url: '/search',
+      url: '/cgi-bin/search.py',
       data: {search: tellServ  },
       dataType: 'json'
     })
