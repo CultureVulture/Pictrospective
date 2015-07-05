@@ -1103,7 +1103,7 @@ h4, .h4, h5, .h5, h6, .h6 {
     font-size: 75%; }
 
 h1, .h1 {
-  font-size: 1.7em; }
+  font-size: 1.5em; }
 
 h2, .h2 {
   font-size: 1.4em; }
@@ -4981,10 +4981,20 @@ body {
   padding-top: 1em; }
 
 .navbar-header h1 {
-  margin-top: 0; }
+  margin-top: 0;
+  text-align: center; }
 
 .navbar-brand {
-  font-size: 1em; }
+  font-size: 1em;
+  display: inline;
+  float: none; }
+
+.navbar-form {
+  border: 0;
+  box-shadow: none; }
+
+.form-control {
+  margin-bottom: 1em; }
 
 .sizeable {
   height: 300px;
@@ -4999,7 +5009,9 @@ body {
           align-items: center;
   margin-top: 6em; }
   .sizeable img {
-    max-height: 100%; }
+    max-height: 100%;
+    min-height: 0;
+    min-width: 0; }
 
 .timeframe {
   font-size: 1.3em; }
@@ -5017,6 +5029,13 @@ body {
 .thumbnail, .navbar-inverse {
   border: none; }
 
+@media (min-width: 768px) {
+  .navbar-header h1 {
+    font-size: 1.7em; }
+  .navbar-brand {
+    float: left; }
+  .form-control {
+    margin-bottom: 0; } }
 
 
 /*# sourceMappingURL=main.css.map */
