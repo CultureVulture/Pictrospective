@@ -5023,6 +5023,10 @@ body {
   text-align: center;
   margin-top: 1em; }
 
+.thebiggie {
+  height: 75vh;
+  width: auto; }
+
 .photocaption {
   padding-top: .5em; }
 
