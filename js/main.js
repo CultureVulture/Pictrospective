@@ -10,41 +10,55 @@ $(document).ready(function() {
 
       console.log('done!');
       //data.keys()
-      var numItems = data.keys().length;
+      console.log(data)
+      var numItems = Object.keys(data).length
+      //var numItems = data.keys().length;
       console.log(numItems);
-      var colWidth = numItems/12;
+      var colWidth = 12/numItems;
 
-      $.each(data, function(key, val){
-        var timespan = key;
-        var timeId = timespan;
-        var photoURL = data.image;
-        var thumbURL = data.thumbnail;
-        var archiveURL = data.link;
-        var photoName = data.name;
+      
+      //$.each(json, function(key, val){
+      $('#timeline').empty();
+      for(var i in data){
+        var timespan = i;
+        var timeId = data[i].year;
+        var photoURL = data[i].image;
+        var thumbURL = data[i].thumbnail;
+        var archiveURL = data[i].link;
+        var photoName = data[i].name;
 
+        console.log(data)
         var largePhoto = '';
 
+        console.log("displaying items");
+
         if (photoURL !== ''){
+          console.log("Using large");
+          console.log(photoURL)
+          console.log(thumbURL)
           largePhoto = '<a href="#" class="thumbnail sizeable largepic"><img src="'+
           thumbURL +
           '" alt="see larger photo" data-large= "' + photoURL + '" data-caption="' + photoName + '"/></a>'
         }
         else {
-          largePhoto = '<img src="'+
+          largePhoto = '<span class="thumbnail sizeable"><img src="'+
           thumbURL +
-          '" alt="' + photoName + '"/>'
+          '" alt="' + photoName + '"/></span>'
+          console.log("Using thumb");
+          console.log(photoURL)
+          console.log(thumbURL)
         }
 
-        $('#timeline').empty();
+        
 
         $('#timeline').append('<div class="col-md-' +
         colWidth +
-        '"><div class="text-center"><p class="original"><a href=""' +
+        '">' + largePhoto + '<div class="text-center"><p class="original"><a href=""' +
         archiveURL +
         'go to archive</a></p><p class="timeframe"><a class="divein"  id="'+
         timeId +
-        '" href="#"></a></p></div></div>' );
-      });
+        '" href="#"></a>'+ timespan +'</p></div></div>' );
+      }
     });
   }
 
