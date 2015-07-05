@@ -7,10 +7,6 @@ $(document).ready(function() {
       dataType: 'json'
     })
     .done(function( data ) {
-
-      console.log('done!');
-      //data.keys()
-      console.log(data)
       var numItems = Object.keys(data).length
       //var numItems = data.keys().length;
       console.log(numItems);
@@ -33,9 +29,6 @@ $(document).ready(function() {
         console.log("displaying items");
 
         if (photoURL !== ''){
-          console.log("Using large");
-          console.log(photoURL)
-          console.log(thumbURL)
           largePhoto = '<a href="#" class="thumbnail sizeable largepic"><img src="'+
           thumbURL +
           '" alt="see larger photo" data-large= "' + photoURL + '" data-caption="' + photoName + '"/></a>'
@@ -44,9 +37,6 @@ $(document).ready(function() {
           largePhoto = '<span class="thumbnail sizeable"><img src="'+
           thumbURL +
           '" alt="' + photoName + '"/></span>'
-          console.log("Using thumb");
-          console.log(photoURL)
-          console.log(thumbURL)
         }
 
         
@@ -56,7 +46,7 @@ $(document).ready(function() {
         '">' + largePhoto + '<div class="text-center"><p class="original"><a href=""' +
         archiveURL +
         'go to archive</a></p><p class="timeframe"><a class="divein"  id="'+
-        timeId +
+        timespan +
         '" href="#"></a>'+ timespan +'</p></div></div>' );
       }
     });
@@ -77,7 +67,7 @@ $(document).ready(function() {
   $('.divein').on('click keypress', function(){
 
        var whichLink = $(this).prop('id');
-
+       console.log("It is being called")
        ajaxCalls(whichLink);
 
        return false;
@@ -86,6 +76,7 @@ $(document).ready(function() {
   var contentStore;
 
   $('.largepic').on('click keypress', function(){
+
     var imgURL = $(this).children('img').prop('data-large');
     var imgCaption = $(this).children('img').prop('data-caption');
 

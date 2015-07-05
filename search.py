@@ -18,100 +18,105 @@ def search(term):
 	#Finds numPictures of data and return numResults that are spaced evenly
 	#term = str(term.getvalue('search'))#.replace(" ", "%20")
 
-	logFile = open("log.log", 'w')
-	logFile.write("Search term " + str(term) + "\n")
-	logFile.write("Search term " + str(term.list)+ "\n")
-	logFile.write("Search term " + str(term.headers)+ "\n")
-	logFile.write("Search term " + str(term).split(",")[1].replace("'", "".replace(")", "")) + "\n")
-	
 	numResults = 4
+
+	logFile = open("log.log", 'w')
+	
+	
 	term = str(term).split(",")[1].replace("'", "").replace(")", "").replace(" ", "")
 
 	logFile.write("term " + term + "\n")
 	
-	search = "http://api.trove.nla.gov.au/result?key=qfmfb53vlncd3s1q&zone=picture&n=100&l-format=Photograph&q=" + term
-	currentSearch = search
-	troveBase = "http://trove.nla.gov.au"
+	if "-" in term: #Then it is a search for sub stuff
+		load = pickle.load(open("searchResults"))
 
-	logFile.write("search " + search)
-	#key = qfmfb53vlncd3s1q
-	numPictures = 20
-	s = 0
-	size = 0
-	pictureDict = dict()
-	while True:
-		logFile.write("In loop")
-		try:
-			response = urlopen(currentSearch)
-		except URLError, e:
-			print 'Not valid URL', e
-			break
-			
-		logFile.write("Searched")
-		pictureTree = ET.parse(response)
+		pictureDict = dict([ (year, pictureDict[year]) for year in pictureDict if int(year) >= yearRange[0] and int(year) < yearRange[1] ])
 
-		response.close()
+	else: #it is the main search
 
-		picturePictures = pictureTree.findall(".//work")
+		search = "http://api.trove.nla.gov.au/result?key=qfmfb53vlncd3s1q&zone=picture&n=100&l-format=Photograph&q=" + term
+		currentSearch = search
+		troveBase = "http://trove.nla.gov.au"
 
-		for picture in picturePictures:
-			id = str(picture.attrib["id"])
-			troveLink = picture.attrib["url"]
-
-			#Only want Photos
-			if picture.find("type").text != "Photograph":
-				continue
-			#Find the year made, only want images with a year
+		logFile.write("search " + search)
+		#key = qfmfb53vlncd3s1q
+		numPictures = 20
+		s = 0
+		size = 0
+		pictureDict = dict()
+		while True:
+			logFile.write("In loop")
 			try:
-				year = picture.find("issued").text
-				try:
-					if int(year) > 2015:
-						continue
-				except:
+				response = urlopen(currentSearch)
+			except URLError, e:
+				print 'Not valid URL', e
+				break
+				
+			logFile.write("Searched")
+			pictureTree = ET.parse(response)
+
+			response.close()
+
+			picturePictures = pictureTree.findall(".//work")
+
+			for picture in picturePictures:
+				id = str(picture.attrib["id"])
+				troveLink = picture.attrib["url"]
+
+				#Only want Photos
+				if picture.find("type").text != "Photograph":
 					continue
-			except AttributeError:
-				continue
+				#Find the year made, only want images with a year
+				try:
+					year = picture.find("issued").text
+					try:
+						if int(year) > 2015:
+							continue
+					except:
+						continue
+				except AttributeError:
+					continue
 
-			#Find name and caption
-			name = picture.find("title").text
-			try:
-				caption = picture.find("snippet").text
-			except AttributeError:
-				caption = ""
+				#Find name and caption
+				name = picture.find("title").text
+				try:
+					caption = picture.find("snippet").text
+				except AttributeError:
+					caption = ""
 
-			#Get fulltext original link
-			for ident in picture.iter("identifier"):
-				if ident.attrib["linktype"] == "fulltext":
-					resource = ident.text
-				elif ident.attrib["linktype"] == "thumbnail":
-					thumbImage = ident.text
-					image = ""
-					if thumbImage[-5] == "t" and "acms.sl.nsw.gov.au" in image:
-						image = thumbImage[:-5] + "r.jpg" 
+				#Get fulltext original link
+				for ident in picture.iter("identifier"):
+					if ident.attrib["linktype"] == "fulltext":
+						resource = ident.text
+					elif ident.attrib["linktype"] == "thumbnail":
+						thumbImage = ident.text
+						image = ""
+						if thumbImage[-5] == "t" and "acms.sl.nsw.gov.au" in image:
+							image = thumbImage[:-5] + "r.jpg" 
 
-			try:
-				pictureDict[year].append( dict() )
-			except:
-				pictureDict[year] = [ dict() ]
+				try:
+					pictureDict[year].append( dict() )
+				except:
+					pictureDict[year] = [ dict() ]
 
-			#pictureDict[year][-1]["name"] = name
-			pictureDict[year][-1]["year"] = year
-			#pictureDict[year][-1]["caption"] = caption
-			pictureDict[year][-1]["troveLink"] = troveBase + troveLink
-			pictureDict[year][-1]["link"] = resource
-			pictureDict[year][-1]["thumbnail"] = thumbImage
-			pictureDict[year][-1]["image"] = image
-		
-			logFile.write("\n")
-			size += 1
-			logFile.write("Size " + str(size))
-		
-		logFile.write("Size " + str(size) + " numPictures " + str(numPictures) )
-		if size > numPictures:
-			break
-		#Get the next results
-		s += 100
-		currentSearch = search + "&s=" +str(s)
+				#pictureDict[year][-1]["name"] = name
+				pictureDict[year][-1]["year"] = year
+				#pictureDict[year][-1]["caption"] = caption
+				pictureDict[year][-1]["troveLink"] = troveBase + troveLink
+				pictureDict[year][-1]["link"] = resource
+				pictureDict[year][-1]["thumbnail"] = thumbImage
+				pictureDict[year][-1]["image"] = image
+			
+				logFile.write("\n")
+				size += 1
+				logFile.write("Size " + str(size))
+			
+			logFile.write("Size " + str(size) + " numPictures " + str(numPictures) )
+			if size > numPictures:
+				break
+			#Get the next results
+			s += 100
+			currentSearch = search + "&s=" +str(s)
 
 	#Find earliest and latext year picture
 	logFile.write("\n GOt details")
