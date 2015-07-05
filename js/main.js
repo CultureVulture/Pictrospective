@@ -1,8 +1,8 @@
-$(function() {
+$(document).ready(function() {
 
   function ajaxCalls(tellServ) {
     $.ajax({
-      url: 'http://localhost:8000/search.py',
+      url: '/search.py',
       data: {search: tellServ  },
       dataType: 'json'
     })
@@ -10,7 +10,7 @@ $(function() {
 
       console.log('done!');
       //data.keys()
-      var numItems = Object.keys(data).length;
+      var numItems = data.keys().length;
       console.log(numItems);
       var colWidth = numItems/12;
 
