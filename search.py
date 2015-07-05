@@ -30,6 +30,8 @@ def search(term):
 	if "-" in term: #Then it is a search for sub stuff
 		load = pickle.load(open("searchResults"))
 
+		logFile.write("refined term " + term + "\n")
+
 		pictureDict = dict([ (year, pictureDict[year]) for year in pictureDict if int(year) >= yearRange[0] and int(year) < yearRange[1] ])
 
 	else: #it is the main search
@@ -106,10 +108,8 @@ def search(term):
 				pictureDict[year][-1]["link"] = resource
 				pictureDict[year][-1]["thumbnail"] = thumbImage
 				pictureDict[year][-1]["image"] = image
-			
-				logFile.write("\n")
 				size += 1
-				logFile.write("Size " + str(size))
+				
 			
 			logFile.write("Size " + str(size) + " numPictures " + str(numPictures) )
 			if size > numPictures:

@@ -47,7 +47,7 @@ $(document).ready(function() {
         archiveURL +
         'go to archive</a></p><p class="timeframe"><a class="divein"  id="'+
         timespan +
-        '" href="#"></a>'+ timespan +'</p></div></div>' );
+        '" href="#">'+ timespan +'</a></p></div></div>' );
       }
     });
   }
@@ -64,7 +64,8 @@ $(document).ready(function() {
   });
 
 
-  $('.divein').on('click keypress', function(){
+$('.divein').each(function(){
+  $(this).on('click keypress', function(){
 
        var whichLink = $(this).prop('id');
        console.log("It is being called")
@@ -73,6 +74,8 @@ $(document).ready(function() {
        return false;
   });
 
+});
+  
   var contentStore;
 
   $('.largepic').on('click keypress', function(){
